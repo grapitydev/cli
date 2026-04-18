@@ -30,28 +30,27 @@ The Grapity platform has three independent repos that depend on each other:
 
 ### Linking all packages
 
-From any repo, you can link local packages for development:
+The cli uses `link:` protocol in package.json to resolve local @grapity/core and @grapity/registry. This is the Bun-native approach for monorepo-like linking without a workspace.
 
 ```bash
-# 1. Build and link core
+# 1. Build core
 cd ~/workspace/grapity/core
 bun install && bun run build
 bun link
 
-# 2. Link and build registry
+# 2. Build registry
 cd ~/workspace/grapity/registry
 bun install
-bun link @grapity/core
 bun run build
 bun link
 
-# 3. Link and build cli
+# 3. Install cli (resolves both via link:)
 cd ~/workspace/grapity/cli
 bun install
-bun link @grapity/core
-bun link @grapity/registry
 bun run build
 ```
+
+No `bun link @grapity/core` step needed. The `link:` protocol in package.json handles resolution automatically.
 
 ### Checking link status
 
@@ -63,21 +62,25 @@ ls -la node_modules/@grapity/core
 
 ### Unlinking (restore npm versions)
 
-Always unlink before pushing to ensure CI resolves packages from npm:
+Before pushing changes that affect package.json, revert `link:` references to version ranges:
 
-```bash
-# In registry/
-bun unlink @grapity/core && bun install
-
-# In cli/
-bun unlink @grapity/core @grapity/registry && bun install
+```json
+// Change in package.json before pushing:
+"@grapity/core": "^0.0.1",           // ← npm version range
+"@grapity/registry": "^0.0.1",       // ← npm version range
+// NOT:
+"@grapity/core": "link:@grapity/core",           // ← local dev only
+"@grapity/registry": "link:@grapity/registry",   // ← local dev only
 ```
 
-### After changes in core
+The CI pipeline publishes to npm and expects version ranges, not `link:` references.
+
+### After changes in core or registry
 
 ```bash
-cd ~/workspace/grapity/core
-bun run build   # Rebuild. Symlinks pick up changes automatically.
+# Rebuild the changed package
+cd ~/workspace/grapity/core   # or registry
+bun run build   # link: references pick up changes via symlink.
 ```
 
 ### Testing the full flow
