@@ -17,6 +17,7 @@ export const pushCommand = new Command("push")
   .option("--pushed-by <by>", "Identity of the pusher")
   .option("--force", "Force push even with breaking changes")
   .option("--reason <reason>", "Reason for force push")
+  .option("--prerelease", "Mark as pre-release version (0.x)")
   .action(async (file, options) => {
     const filePath = path.resolve(file);
     const content = fs.readFileSync(filePath, "utf-8");
@@ -31,6 +32,7 @@ export const pushCommand = new Command("push")
       tags: options.tags?.split(","),
       gitRef: options.gitRef,
       pushedBy: options.pushedBy,
+      prerelease: options.prerelease,
       force: options.force,
       reason: options.reason,
     });

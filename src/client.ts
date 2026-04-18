@@ -12,7 +12,7 @@ import type {
   DeprecateVersionResponse,
   HealthResponse,
 } from "@grapity/core";
-import { getRegistryUrl } from "./config";
+import { getConfig, getRegistryUrl } from "./config";
 
 async function request<T>(
   method: string,
@@ -21,10 +21,15 @@ async function request<T>(
 ): Promise<T> {
   const baseUrl = getRegistryUrl();
   const url = `${baseUrl}${path}`;
+  const config = getConfig();
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
+
+  if (config.mode === "remote" && config.remote?.apiKey) {
+    headers["X-API-Key"] = config.remote.apiKey;
+  }
 
   const response = await fetch(url, {
     method,
