@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - [Bun](https://bun.sh/) >= 1.3
-- Node.js >= 18 (for type checking)
+- Node.js >= 18
 
 ## Setup
 
@@ -11,61 +11,84 @@
 bun install
 ```
 
-## Development
+## Commands
 
 ```bash
-# Type check
-bun run typecheck
-
-# Build
-bun run build
-
-# Run tests
-bun run test
-
-# Run CLI locally
-bun run dev registry list
+bun run typecheck   # Type check
+bun run build       # Build dist/
+bun test            # Run tests
+bun run dev         # Run CLI locally
 ```
 
-## Local Linking for Development
+## Local Development
 
-@grapity/cli depends on @grapity/core (hard dependency) and @grapity/registry (peer dependency, for `grapity serve`).
+The Grapity platform has three independent repos that depend on each other:
+
+```
+@grapity/core  ←  @grapity/registry  ←  @grapity/cli (peer dep)
+```
+
+### Linking all packages
+
+From any repo, you can link local packages for development:
 
 ```bash
-# First, link core and registry (one time)
-cd ../core && bun run build && bun link
-cd ../registry && bun run build && bun link
+# 1. Build and link core
+cd ~/workspace/grapity/core
+bun install && bun run build
+bun link
 
-# Then, in this repo (cli/)
+# 2. Link and build registry
+cd ~/workspace/grapity/registry
+bun install
+bun link @grapity/core
+bun run build
+bun link
+
+# 3. Link and build cli
+cd ~/workspace/grapity/cli
+bun install
 bun link @grapity/core
 bun link @grapity/registry
-bun install
+bun run build
 ```
 
-**Always unlink before pushing:**
-
-```bash
-bun unlink @grapity/core
-bun unlink @grapity/registry
-bun install
-```
-
-Check if a link is active:
+### Checking link status
 
 ```bash
 ls -la node_modules/@grapity/core
-ls -la node_modules/@grapity/registry
-# A symlink shows the target path
+# Symlink: node_modules/@grapity/core -> /Users/you/workspace/grapity/core
+# npm:      node_modules/@grapity/core/  (regular directory)
 ```
 
-## Testing the Full Flow
+### Unlinking (restore npm versions)
+
+Always unlink before pushing to ensure CI resolves packages from npm:
+
+```bash
+# In registry/
+bun unlink @grapity/core && bun install
+
+# In cli/
+bun unlink @grapity/core @grapity/registry && bun install
+```
+
+### After changes in core
+
+```bash
+cd ~/workspace/grapity/core
+bun run build   # Rebuild. Symlinks pick up changes automatically.
+```
+
+### Testing the full flow
 
 ```bash
 # Terminal 1: Start the registry server
-cd ../registry
+cd ~/workspace/grapity/registry
 bun run dev
 
 # Terminal 2: Use the CLI
+cd ~/workspace/grapity/cli
 bun run dev registry init --local
 bun run dev registry push ./openapi.yaml --name my-api
 bun run dev registry list
