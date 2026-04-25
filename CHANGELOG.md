@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.4](https://github.com/grapitydev/cli/compare/v0.0.3...v0.0.4) (2026-04-25)
+
+
+### Bug Fixes
+
+* bump @grapity/registry dependency to ^0.0.4 ([815ac1c](https://github.com/grapitydev/cli/commit/815ac1c8f6706b0bdb5009dfcb1a8edba47beb94))
+* read version dynamically from package.json ([cb4033d](https://github.com/grapitydev/cli/commit/cb4033d9ef4f2b38475e982142aad49ec5e47e40))
+
 ## [0.0.3](https://github.com/grapitydev/cli/compare/v0.0.2...v0.0.3) (2026-04-25)
 
 
