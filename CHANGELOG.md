@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.11](https://github.com/grapitydev/cli/compare/v0.0.10...v0.0.11) (2026-04-25)
+
+
+### Bug Fixes
+
+* bump @grapity/registry dependency to ^0.0.9 ([2f9cb6e](https://github.com/grapitydev/cli/commit/2f9cb6e7b18cac43ad7ac7b9bc9847fc760aef56))
+
 ## [0.0.10](https://github.com/grapitydev/cli/compare/v0.0.9...v0.0.10) (2026-04-25)
 
 
