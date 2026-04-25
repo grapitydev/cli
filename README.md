@@ -1,6 +1,6 @@
 # @grapity/cli
 
-Grapity CLI - the command line interface for the Grapity platform.
+Grapity CLI - the command line interface for the Grapity platform. Requires Node.js 18+.
 
 ## Installation
 
