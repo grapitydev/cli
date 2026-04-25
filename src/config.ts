@@ -30,18 +30,24 @@ export function getConfig(): Config {
   }
 
   const content = fs.readFileSync(configPath, "utf-8");
-  const parsed = yaml.load(content) as Config;
+  let parsed: unknown;
+  try {
+    parsed = yaml.load(content);
+  } catch {
+    return DEFAULT_CONFIG;
+  }
 
   if (!parsed || typeof parsed !== "object") {
     return DEFAULT_CONFIG;
   }
 
+  const config = parsed as Config;
   return {
-    mode: parsed.mode ?? DEFAULT_CONFIG.mode,
-    remote: parsed.remote,
+    mode: config.mode ?? DEFAULT_CONFIG.mode,
+    remote: config.remote,
     local: {
-      port: parsed.local?.port ?? DEFAULT_CONFIG.local!.port,
-      sqlitePath: parsed.local?.sqlitePath,
+      port: config.local?.port ?? DEFAULT_CONFIG.local!.port,
+      sqlitePath: config.local?.sqlitePath,
     },
   };
 }
