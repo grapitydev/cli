@@ -8,8 +8,6 @@ import type {
   ListVersionsResponse,
   GetVersionResponse,
   GetCompatReportResponse,
-  DeprecateVersionRequest,
-  DeprecateVersionResponse,
   HealthResponse,
 } from "@grapity/core";
 import { getConfig, getRegistryUrl } from "./config";
@@ -38,7 +36,7 @@ async function request<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json() as { message?: string };
     throw new Error(error.message ?? `Request failed: ${response.status}`);
   }
 
@@ -72,9 +70,6 @@ export const client = {
 
   getCompatReport: (name: string, semver: string) =>
     request<GetCompatReportResponse>("GET", `/v1/specs/${name}/compat/${semver}`),
-
-  deprecateVersion: (name: string, semver: string, data: DeprecateVersionRequest) =>
-    request<DeprecateVersionResponse>("PATCH", `/v1/specs/${name}/versions/${semver}/deprecate`, data),
 
   health: () => request<HealthResponse>("GET", "/v1/health"),
 };

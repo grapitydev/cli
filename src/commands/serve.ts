@@ -11,7 +11,7 @@ export const serveCommand = new Command("serve")
     const auth = options.auth;
 
     try {
-      const { startServer } = await import("@grapity/registry");
+      const { startServer } = await import("@grapity/registry/serve");
 
       await startServer({
         port,

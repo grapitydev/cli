@@ -12,7 +12,7 @@ export const validateCommand = new Command("validate")
     const filePath = path.resolve(file);
     const content = fs.readFileSync(filePath, "utf-8");
 
-    const result = await client.validateSpec(options.against, { content, name: options.against });
+    const result = await client.validateSpec(options.against, { content });
 
     console.log(formatValidateResult(result));
   });

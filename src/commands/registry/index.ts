@@ -3,7 +3,7 @@ import { pushCommand } from "./push";
 import { validateCommand } from "./validate";
 import { listCommand } from "./list";
 import { versionsCommand } from "./versions";
-import { deprecateCommand } from "./deprecate";
+import { getCommand } from "./get";
 
 export const registryCommand = new Command("registry")
   .description("Manage specs in the Grapity registry")
@@ -11,4 +11,4 @@ export const registryCommand = new Command("registry")
   .addCommand(validateCommand)
   .addCommand(listCommand)
   .addCommand(versionsCommand)
-  .addCommand(deprecateCommand);
+  .addCommand(getCommand);

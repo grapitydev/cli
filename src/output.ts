@@ -1,6 +1,6 @@
 import type {
   Spec,
-  SpecVersion,
+  PublicSpecVersion,
   PushSpecResponse,
   ValidateSpecResponse,
 } from "@grapity/core";
@@ -40,13 +40,34 @@ export function formatSpec(spec: Spec): string {
   return lines.join("\n");
 }
 
-export function formatVersion(version: SpecVersion): string {
+export function formatVersion(version: PublicSpecVersion): string {
   const lines: string[] = [
-    `  ${version.semver} [${version.status}]`,
+    `  ${version.semver}${version.isPrerelease ? " [prerelease]" : ""}`,
     `  Pushed: ${version.createdAt.toISOString()}`,
   ];
   if (version.gitRef) {
     lines.push(`  Git: ${version.gitRef}`);
   }
+  return lines.join("\n");
+}
+
+export function formatSpecDetail(spec: Spec, latestVersion?: PublicSpecVersion): string {
+  const lines: string[] = [
+    `${spec.name} (${spec.type})`,
+  ];
+  if (spec.description) lines.push(`  Description: ${spec.description}`);
+  if (spec.owner) lines.push(`  Owner: ${spec.owner}`);
+  if (spec.sourceRepo) lines.push(`  Source: ${spec.sourceRepo}`);
+  if (spec.tags.length > 0) lines.push(`  Tags: ${spec.tags.join(", ")}`);
+  lines.push(`  Created: ${spec.createdAt.toISOString()}`);
+
+  if (latestVersion) {
+    lines.push(`  Latest: ${latestVersion.semver}${latestVersion.isPrerelease ? " [prerelease]" : ""}`);
+    if (latestVersion.pushedBy) lines.push(`  Pushed by: ${latestVersion.pushedBy}`);
+    if (latestVersion.gitRef) lines.push(`  Git: ${latestVersion.gitRef}`);
+  } else {
+    lines.push("  No versions yet.");
+  }
+
   return lines.join("\n");
 }

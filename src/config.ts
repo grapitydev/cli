@@ -40,8 +40,8 @@ export function getConfig(): Config {
     mode: parsed.mode ?? DEFAULT_CONFIG.mode,
     remote: parsed.remote,
     local: {
-      ...DEFAULT_CONFIG.local,
-      ...parsed.local,
+      port: parsed.local?.port ?? DEFAULT_CONFIG.local!.port,
+      sqlitePath: parsed.local?.sqlitePath,
     },
   };
 }
