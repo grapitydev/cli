@@ -35,7 +35,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@grapity/core": "^0.0.3",
+    "@grapity/core": "^0.0.4",
     "commander": "^13.1.0",
     "js-yaml": "^4.1.0",
     "chalk": "^5.4.0",
