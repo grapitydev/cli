@@ -20,11 +20,17 @@ export const serveCommand = new Command("serve")
         postgresUrl: db?.startsWith("postgresql://") ? db : undefined,
         auth: auth === "none" ? { mode: "none" } : { mode: auth },
       });
-    } catch {
-      console.error(
-        "Error: @grapity/registry is required for 'grapity serve'.\n" +
-        "Install it with: npm install -g @grapity/registry"
-      );
-      process.exit(1);
+    } catch (error: any) {
+      if (
+        error?.code === "ERR_MODULE_NOT_FOUND" ||
+        error?.code === "MODULE_NOT_FOUND"
+      ) {
+        console.error(
+          "Error: @grapity/registry is required for 'grapity serve'.\n" +
+          "Install it with: npm install -g @grapity/registry"
+        );
+        process.exit(1);
+      }
+      throw error;
     }
   });
