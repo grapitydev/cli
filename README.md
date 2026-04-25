@@ -23,11 +23,11 @@ grapity registry push ./openapi.yaml --name payments-api
 # List specs
 grapity registry list
 
+# Get spec details
+grapity registry get payments-api
+
 # Validate a spec
 grapity registry validate ./openapi.yaml --against payments-api
-
-# Deprecate a version
-grapity registry deprecate payments-api@1.4.2 --sunset 2026-09-01
 ```
 
 ## License
