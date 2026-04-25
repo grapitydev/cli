@@ -1,6 +1,6 @@
 {
   "name": "@grapity/cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Grapity CLI - API spec registry management from the command line",
   "license": "Apache-2.0",
   "repository": {
@@ -18,7 +18,10 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist", "bin"],
+  "files": [
+    "dist",
+    "bin"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "bun run src/index.ts",
