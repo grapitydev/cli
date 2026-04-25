@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.7](https://github.com/grapitydev/cli/compare/v0.0.6...v0.0.7) (2026-04-25)
+
+
+### Bug Fixes
+
+* properly re-throw non-module-not-found errors in serve command ([08d6183](https://github.com/grapitydev/cli/commit/08d6183c5bfb768ab437915aa8fbf085c10ac229))
+
 ## [0.0.6](https://github.com/grapitydev/cli/compare/v0.0.5...v0.0.6) (2026-04-25)
 
 
