@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.12](https://github.com/grapitydev/cli/compare/v0.0.11...v0.0.12) (2026-04-25)
+
+
+### Bug Fixes
+
+* use date values directly in output formatters instead of calling toISOString ([b5968f0](https://github.com/grapitydev/cli/commit/b5968f080aed9bce78095f117bada3b048727717))
+
 ## [0.0.11](https://github.com/grapitydev/cli/compare/v0.0.10...v0.0.11) (2026-04-25)
 
 
