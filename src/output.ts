@@ -43,7 +43,7 @@ export function formatSpec(spec: Spec): string {
 export function formatVersion(version: PublicSpecVersion): string {
   const lines: string[] = [
     `  ${version.semver}${version.isPrerelease ? " [prerelease]" : ""}`,
-    `  Pushed: ${version.createdAt.toISOString()}`,
+    `  Pushed: ${version.createdAt}`,
   ];
   if (version.gitRef) {
     lines.push(`  Git: ${version.gitRef}`);
@@ -59,7 +59,7 @@ export function formatSpecDetail(spec: Spec, latestVersion?: PublicSpecVersion):
   if (spec.owner) lines.push(`  Owner: ${spec.owner}`);
   if (spec.sourceRepo) lines.push(`  Source: ${spec.sourceRepo}`);
   if (spec.tags.length > 0) lines.push(`  Tags: ${spec.tags.join(", ")}`);
-  lines.push(`  Created: ${spec.createdAt.toISOString()}`);
+  lines.push(`  Created: ${spec.createdAt}`);
 
   if (latestVersion) {
     lines.push(`  Latest: ${latestVersion.semver}${latestVersion.isPrerelease ? " [prerelease]" : ""}`);
