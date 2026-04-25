@@ -42,7 +42,7 @@
     "ora": "^8.2.0"
   },
   "peerDependencies": {
-    "@grapity/registry": "^0.0.6"
+    "@grapity/registry": "^0.0.7"
   },
   "peerDependenciesMeta": {
     "@grapity/registry": {
@@ -50,7 +50,7 @@
     }
   },
   "devDependencies": {
-    "@grapity/registry": "^0.0.6",
+    "@grapity/registry": "^0.0.7",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.0.0",
     "tsup": "^8.4.0",
