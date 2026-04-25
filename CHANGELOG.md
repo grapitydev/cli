@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/grapitydev/cli/compare/v0.0.5...v0.0.6) (2026-04-25)
+
+
+### Bug Fixes
+
+* add Node.js version requirement to README ([b8c3da4](https://github.com/grapitydev/cli/commit/b8c3da43c297e59b424c8482d054e17d9b002a2b))
+
 ## [0.0.5](https://github.com/grapitydev/cli/compare/v0.0.4...v0.0.5) (2026-04-25)
 
 
