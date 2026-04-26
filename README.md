@@ -115,6 +115,24 @@ Get metadata and latest version details for a spec.
 
 List all versions of a spec, newest first.
 
+### `grapity registry spec <name>`
+
+Fetch the raw spec document (OpenAPI/AsyncAPI file) for a spec. Prints to stdout, pipe-friendly.
+
+```
+--version <semver>    Specific version (default: latest)
+--format <format>     Output format: json or yaml (default: yaml)
+```
+
+Examples:
+
+```bash
+grapity registry spec payments-api                          # latest, yaml
+grapity registry spec payments-api --format json            # latest, json
+grapity registry spec payments-api --version 1.2.0          # specific version
+grapity registry spec payments-api --version 1.2.0 | yq '.info.title'
+```
+
 ## License
 
 Apache-2.0
