@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0](https://github.com/grapitydev/cli/compare/v0.0.12...v0.1.0) (2026-04-26)
+
+
+### Features
+
+* add registry spec command to fetch raw spec content ([1c85826](https://github.com/grapitydev/cli/commit/1c85826ba5453e5da2364830a6ca01a66b638980))
+
 ## [0.0.12](https://github.com/grapitydev/cli/compare/v0.0.11...v0.0.12) (2026-04-25)
 
 
