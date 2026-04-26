@@ -43,6 +43,27 @@ async function request<T>(
   return response.json() as Promise<T>;
 }
 
+async function requestText(method: string, path: string): Promise<string> {
+  const baseUrl = getRegistryUrl();
+  const url = `${baseUrl}${path}`;
+  const config = getConfig();
+
+  const headers: Record<string, string> = {};
+
+  if (config.mode === "remote" && config.remote?.apiKey) {
+    headers["X-API-Key"] = config.remote.apiKey;
+  }
+
+  const response = await fetch(url, { method, headers });
+
+  if (!response.ok) {
+    const error = await response.json() as { message?: string };
+    throw new Error(error.message ?? `Request failed: ${response.status}`);
+  }
+
+  return response.text();
+}
+
 export const client = {
   pushSpec: (data: PushSpecRequest) =>
     request<PushSpecResponse>("POST", "/v1/specs", data),
@@ -72,4 +93,12 @@ export const client = {
     request<GetCompatReportResponse>("GET", `/v1/specs/${name}/compat/${semver}`),
 
   health: () => request<HealthResponse>("GET", "/v1/health"),
+
+  fetchSpec: (name: string, options: { version?: string; format?: "json" | "yaml" }) => {
+    const format = options.format ?? "yaml";
+    const path = options.version
+      ? `/v1/specs/${name}/versions/${options.version}/spec.${format}`
+      : `/v1/specs/${name}/spec.${format}`;
+    return requestText("GET", path);
+  },
 };

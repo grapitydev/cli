@@ -185,3 +185,58 @@ describe("error handling", () => {
     await expect(client.health()).rejects.toThrow("Request failed: 500");
   });
 });
+
+function mockFetchText(status: number, body: string) {
+  global.fetch = async (input: string | URL | Request, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    lastCall = {
+      url,
+      method: (init?.method ?? "GET").toUpperCase(),
+      body: undefined,
+      headers: (init?.headers ?? {}) as Record<string, string>,
+    };
+    return new Response(body, {
+      status,
+      headers: { "Content-Type": "text/plain" },
+    });
+  };
+}
+
+describe("client.fetchSpec", () => {
+  test("calls GET /v1/specs/:name/spec.yaml for latest, default format", async () => {
+    mockFetchText(200, "openapi: 3.1.0");
+    await client.fetchSpec("payments-api", { format: "yaml" });
+    expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/spec.yaml`);
+    expect(lastCall.method).toBe("GET");
+  });
+
+  test("calls GET /v1/specs/:name/spec.json for latest, json format", async () => {
+    mockFetchText(200, '{"openapi":"3.1.0"}');
+    await client.fetchSpec("payments-api", { format: "json" });
+    expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/spec.json`);
+  });
+
+  test("calls GET /v1/specs/:name/versions/:semver/spec.yaml for specific version, yaml", async () => {
+    mockFetchText(200, "openapi: 3.1.0");
+    await client.fetchSpec("payments-api", { version: "1.2.0", format: "yaml" });
+    expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/versions/1.2.0/spec.yaml`);
+  });
+
+  test("calls GET /v1/specs/:name/versions/:semver/spec.json for specific version, json", async () => {
+    mockFetchText(200, '{"openapi":"3.1.0"}');
+    await client.fetchSpec("payments-api", { version: "1.2.0", format: "json" });
+    expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/versions/1.2.0/spec.json`);
+  });
+
+  test("returns raw text body as-is", async () => {
+    const raw = "openapi: 3.1.0\ninfo:\n  title: Test";
+    mockFetchText(200, raw);
+    const result = await client.fetchSpec("payments-api", { format: "yaml" });
+    expect(result).toBe(raw);
+  });
+
+  test("throws with server error message on 404", async () => {
+    mockFetch(404, { error: "not_found", message: "Spec not found", statusCode: 404 });
+    await expect(client.fetchSpec("payments-api", { format: "yaml" })).rejects.toThrow("Spec not found");
+  });
+});

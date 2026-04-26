@@ -4,6 +4,7 @@ import { validateCommand } from "./validate";
 import { listCommand } from "./list";
 import { versionsCommand } from "./versions";
 import { getCommand } from "./get";
+import { specCommand } from "./spec";
 
 export const registryCommand = new Command("registry")
   .description("Manage specs in the Grapity registry")
@@ -11,4 +12,5 @@ export const registryCommand = new Command("registry")
   .addCommand(validateCommand)
   .addCommand(listCommand)
   .addCommand(versionsCommand)
-  .addCommand(getCommand);
+  .addCommand(getCommand)
+  .addCommand(specCommand);
