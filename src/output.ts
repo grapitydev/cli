@@ -28,6 +28,17 @@ const c = {
   dim:        chalk.hex("#8888a0").dim,
 };
 
+// Syntax highlighting palette — decoupled from UI semantic colors
+const sh = {
+  key:         chalk.hex("#818cf8"),
+  string:      chalk.hex("#a5f3c4"),
+  number:      chalk.hex("#06b6d4"),
+  boolean:     chalk.hex("#c084fc"),
+  null:        chalk.hex("#c084fc"),
+  comment:     chalk.hex("#6b7280"),
+  punctuation: chalk.hex("#4b5563"),
+};
+
 const DIVIDER = `  ${c.dim("─".repeat(40))}`;
 const MAX_CHANGE_ITEMS = 5;
 
@@ -236,4 +247,137 @@ export function formatReady(port: number): string {
 
 export function formatShutdown(): string {
   return `  ${c.accentDim("◆")}  Shutting down Grapity Registry`;
+}
+
+// ─── Syntax highlighting for spec documents ───
+// These functions add ANSI color codes for TTY display only.
+// They never modify the underlying data or contract semantics.
+
+function highlightJsonValue(value: unknown, indent: number): string {
+  const spaces = "  ".repeat(indent);
+
+  if (value === null) return sh.null("null");
+  if (typeof value === "boolean") return sh.boolean(String(value));
+  if (typeof value === "number") return sh.number(String(value));
+  if (typeof value === "string") return sh.string(JSON.stringify(value));
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return sh.punctuation("[]");
+    const items = value.map((v) => `${spaces}  ${highlightJsonValue(v, indent + 1)}`);
+    return `${sh.punctuation("[")}\n${items.join(",\n")}\n${spaces}${sh.punctuation("]")}`;
+  }
+
+  if (typeof value === "object" && value !== null) {
+    const entries = Object.entries(value);
+    if (entries.length === 0) return sh.punctuation("{}");
+    const items = entries.map(([k, v]) => {
+      return `${spaces}  ${sh.key(JSON.stringify(k))}: ${highlightJsonValue(v, indent + 1)}`;
+    });
+    return `${sh.punctuation("{")}\n${items.join(",\n")}\n${spaces}${sh.punctuation("}")}`;
+  }
+
+  return String(value);
+}
+
+export function highlightJson(json: string): string {
+  return highlightJsonValue(JSON.parse(json), 0);
+}
+
+function findYamlCommentIndex(line: string): number {
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const prev = i > 0 ? line[i - 1] : "";
+
+    if (char === "'" && !inDoubleQuote && prev !== "\\") {
+      inSingleQuote = !inSingleQuote;
+    } else if (char === '"' && !inSingleQuote && prev !== "\\") {
+      inDoubleQuote = !inDoubleQuote;
+    } else if (
+      char === "#" &&
+      !inSingleQuote &&
+      !inDoubleQuote &&
+      (i === 0 || line[i - 1] === " " || line[i - 1] === "\t")
+    ) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+function highlightYamlScalar(value: string): string {
+  const trimmed = value.trimStart();
+  const leading = value.slice(0, value.length - trimmed.length);
+
+  if (!trimmed) return value;
+
+  // Nested key: value inside arrays or block sequences
+  const nestedKeyMatch = trimmed.match(/^([^:\s].*?)(\s*:\s*)(.*)$/);
+  if (nestedKeyMatch) {
+    const [, key, sep, rest] = nestedKeyMatch;
+    return leading + sh.key(key) + sep + highlightYamlScalar(rest);
+  }
+
+  // Quoted strings
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return leading + sh.string(trimmed);
+  }
+
+  // Numbers
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/.test(trimmed)) {
+    return leading + sh.number(trimmed);
+  }
+
+  // Booleans and null
+  if (/^(?:true|false|null|~|yes|no|on|off)$/.test(trimmed)) {
+    return leading + sh.boolean(trimmed);
+  }
+
+  // Unquoted strings
+  return leading + sh.string(trimmed);
+}
+
+export function highlightYaml(yamlContent: string): string {
+  return yamlContent
+    .split("\n")
+    .map((line) => {
+      // Empty lines
+      if (!line.trim()) return line;
+
+      // Find inline comment
+      const commentIdx = findYamlCommentIndex(line);
+      let content = line;
+      let comment = "";
+      if (commentIdx !== -1) {
+        content = line.slice(0, commentIdx);
+        comment = sh.comment(line.slice(commentIdx));
+      }
+
+      // Full-line comments
+      if (content.trimStart().startsWith("#")) {
+        return sh.comment(line);
+      }
+
+      // Key: value
+      const keyMatch = content.match(/^(\s*)([^:\s].*?)(\s*:\s*)(.*)$/);
+      if (keyMatch) {
+        const [, indent, key, sep, value] = keyMatch;
+        return indent + sh.key(key) + sep + highlightYamlScalar(value) + comment;
+      }
+
+      // Array item: - value
+      const arrMatch = content.match(/^(\s*-\s)(.*)$/);
+      if (arrMatch) {
+        return arrMatch[1] + highlightYamlScalar(arrMatch[2]) + comment;
+      }
+
+      return content + comment;
+    })
+    .join("\n");
 }

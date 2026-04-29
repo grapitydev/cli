@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { client } from "../../client";
-import { formatHeader, formatError } from "../../output";
+import { formatHeader, formatError, highlightJson, highlightYaml } from "../../output";
 
 export const specCommand = new Command("spec")
   .description("Fetch the spec document for an API")
@@ -18,9 +18,10 @@ export const specCommand = new Command("spec")
         format: options.format,
       });
 
+      const useColors = process.stdout.isTTY ?? false;
       const output = options.format === "json"
-        ? JSON.stringify(JSON.parse(content), null, 2)
-        : content;
+        ? (useColors ? highlightJson(content) : JSON.stringify(JSON.parse(content), null, 2))
+        : (useColors ? highlightYaml(content) : content);
       console.log(output);
     } catch (err) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
