@@ -17,7 +17,11 @@ export const specCommand = new Command("spec")
         version: options.version,
         format: options.format,
       });
-      console.log(content);
+
+      const output = options.format === "json"
+        ? JSON.stringify(JSON.parse(content), null, 2)
+        : content;
+      console.log(output);
     } catch (err) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
       console.error(formatError("request failed", message));
