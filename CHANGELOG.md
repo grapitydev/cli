@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/grapitydev/cli/compare/v0.2.1...v0.2.2) (2026-04-29)
+
+
+### Bug Fixes
+
+* resolve package.json path correctly in bundled serve command ([c007140](https://github.com/grapitydev/cli/commit/c00714099cb4c1c31a895a6a7bc04364ddfe088f))
+
 ## [0.2.1](https://github.com/grapitydev/cli/compare/v0.2.0...v0.2.1) (2026-04-29)
 
 
