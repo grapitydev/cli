@@ -65,32 +65,48 @@ async function requestText(method: string, path: string): Promise<string> {
 }
 
 export const client = {
-  pushSpec: (data: PushSpecRequest) =>
-    request<PushSpecResponse>("POST", "/v1/specs", data),
+  pushSpec: async (data: PushSpecRequest) => {
+    const res = await request<PushSpecResponse>("POST", "/v1/specs", data);
+    return res.data;
+  },
 
-  validateSpec: (name: string, data: ValidateSpecRequest) =>
-    request<ValidateSpecResponse>("POST", `/v1/specs/${name}/validate`, data),
+  validateSpec: async (name: string, data: ValidateSpecRequest) => {
+    const res = await request<ValidateSpecResponse>("POST", `/v1/specs/${name}/validate`, data);
+    return res.data;
+  },
 
-  listSpecs: (params?: { type?: string; owner?: string; tags?: string[] }) => {
+  listSpecs: async (params?: { type?: string; owner?: string; tags?: string[] }) => {
     const searchParams = new URLSearchParams();
     if (params?.type) searchParams.set("type", params.type);
     if (params?.owner) searchParams.set("owner", params.owner);
     if (params?.tags) searchParams.set("tags", params.tags.join(","));
     const query = searchParams.toString();
-    return request<ListSpecsResponse>("GET", `/v1/specs${query ? `?${query}` : ""}`);
+    const res = await request<ListSpecsResponse>("GET", `/v1/specs${query ? `?${query}` : ""}`);
+    return res.data;
   },
 
-  getSpec: (name: string) =>
-    request<GetSpecResponse>("GET", `/v1/specs/${name}`),
+  getSpec: async (name: string) => {
+    const res = await request<GetSpecResponse>("GET", `/v1/specs/${name}`);
+    return res.data;
+  },
 
-  listVersions: (name: string) =>
-    request<ListVersionsResponse>("GET", `/v1/specs/${name}/versions`),
+  listVersions: (name: string, params?: { limit?: number; offset?: number }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.limit !== undefined) searchParams.set("limit", String(params.limit));
+    if (params?.offset !== undefined) searchParams.set("offset", String(params.offset));
+    const query = searchParams.toString();
+    return request<ListVersionsResponse>("GET", `/v1/specs/${name}/versions${query ? `?${query}` : ""}`);
+  },
 
-  getVersion: (name: string, semver: string) =>
-    request<GetVersionResponse>("GET", `/v1/specs/${name}/versions/${semver}`),
+  getVersion: async (name: string, semver: string) => {
+    const res = await request<GetVersionResponse>("GET", `/v1/specs/${name}/versions/${semver}`);
+    return res.data;
+  },
 
-  getCompatReport: (name: string, semver: string) =>
-    request<GetCompatReportResponse>("GET", `/v1/specs/${name}/compat/${semver}`),
+  getCompatReport: async (name: string, semver: string) => {
+    const res = await request<GetCompatReportResponse>("GET", `/v1/specs/${name}/compat/${semver}`);
+    return res.data;
+  },
 
   health: () => request<HealthResponse>("GET", "/v1/health"),
 

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import yaml from "js-yaml";
+import { formatError, formatInitSuccess } from "../output";
 
 interface InitConfig {
   mode: "local" | "remote";
@@ -31,7 +32,7 @@ export const initCommand = new Command("init")
     let mode: "local" | "remote";
 
     if (options.local && options.remote) {
-      console.error("Error: Cannot specify both --local and --remote.");
+      console.error(formatError("invalid flags", "Cannot specify both --local and --remote."));
       process.exit(1);
     }
 
@@ -40,10 +41,16 @@ export const initCommand = new Command("init")
     } else if (options.remote) {
       mode = "remote";
     } else {
-      console.log("Select registry mode:");
-      console.log("  1) Local  - Run a registry server on this machine (SQLite)");
-      console.log("  2) Remote - Connect to an existing Grapity server");
-      console.error("Error: Use --local or --remote to select mode.");
+      console.error(
+        formatError(
+          "missing flag",
+          "Select registry mode: use --local or --remote.",
+          [
+            "--local   Run a registry server on this machine (SQLite)",
+            "--remote  Connect to an existing Grapity server",
+          ]
+        )
+      );
       process.exit(1);
     }
 
@@ -60,7 +67,13 @@ export const initCommand = new Command("init")
       }
     } else {
       if (!options.url) {
-        console.error("Error: --url is required for remote mode. Example: --url https://api.grapity.dev");
+        console.error(
+          formatError(
+            "missing flag",
+            "--url is required for remote mode.",
+            ["Example:  grapity init --remote --url https://api.grapity.dev"]
+          )
+        );
         process.exit(1);
       }
 
@@ -77,18 +90,14 @@ export const initCommand = new Command("init")
     const yamlContent = yaml.dump(config);
     fs.writeFileSync(configPath, yamlContent, "utf-8");
 
-    console.log(`Configuration written to ${configPath}`);
-    console.log(`Mode: ${mode}`);
-
-    if (mode === "local") {
-      console.log(`Server will listen on port ${config.local?.port}`);
-      console.log(`Database: ${config.local?.sqlitePath}`);
-      console.log(`\nStart the server with: grapity serve`);
-    } else {
-      console.log(`Registry URL: ${config.remote?.url}`);
-      if (config.remote?.apiKey) {
-        console.log("API key: configured");
-      }
-      console.log(`\nPush a spec with: grapity registry push ./openapi.yaml --name my-api`);
-    }
+    console.log(
+      formatInitSuccess({
+        configPath,
+        mode,
+        port: config.local?.port,
+        dbPath: config.local?.sqlitePath,
+        url: config.remote?.url,
+        hasApiKey: !!config.remote?.apiKey,
+      })
+    );
   });

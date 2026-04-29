@@ -1,4 +1,7 @@
 import { Command } from "commander";
+import os from "node:os";
+import path from "node:path";
+import { formatError, formatServeConfig } from "../output";
 
 export const serveCommand = new Command("serve")
   .description("Start the local Grapity registry server")
@@ -9,15 +12,25 @@ export const serveCommand = new Command("serve")
     const port = parseInt(options.port, 10);
     const db = options.db;
     const auth = options.auth;
+    const isPostgres = db?.startsWith("postgresql://");
+    const dbMode: "sqlite" | "postgresql" = isPostgres ? "postgresql" : "sqlite";
+    const dbPath = isPostgres
+      ? undefined
+      : (db ?? path.join(os.homedir(), ".grapity", "registry.db"));
+
+    console.log(
+      formatServeConfig({ mode: dbMode, port, dbPath, auth })
+    );
+    console.log("");
 
     try {
       const { startServer } = await import("@grapity/registry/serve");
 
       await startServer({
         port,
-        database: db?.startsWith("postgresql://") ? "postgresql" : "sqlite",
-        sqlitePath: db && !db.startsWith("postgresql://") ? db : undefined,
-        postgresUrl: db?.startsWith("postgresql://") ? db : undefined,
+        database: dbMode,
+        sqlitePath: dbPath,
+        postgresUrl: isPostgres ? db : undefined,
         auth: auth === "none" ? { mode: "none" } : { mode: auth },
       });
     } catch (error: any) {
@@ -26,8 +39,11 @@ export const serveCommand = new Command("serve")
         error?.code === "MODULE_NOT_FOUND"
       ) {
         console.error(
-          "Error: @grapity/registry is required for 'grapity serve'.\n" +
-          "Install it with: npm install -g @grapity/registry"
+          formatError(
+            "missing dependency",
+            "@grapity/registry is required for 'grapity serve'.",
+            ["Install it with:  npm install -g @grapity/registry"]
+          )
         );
         process.exit(1);
       }

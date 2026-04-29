@@ -1,6 +1,8 @@
 import { Command } from "commander";
 import fs from "node:fs";
 import path from "node:path";
+import ora from "ora";
+import chalk from "chalk";
 import { client } from "../../client";
 import { formatPushResult } from "../../output";
 
@@ -22,6 +24,11 @@ export const pushCommand = new Command("push")
     const filePath = path.resolve(file);
     const content = fs.readFileSync(filePath, "utf-8");
 
+    const spinner = ora({
+      text: `Pushing ${chalk.hex("#6366f1").bold(options.name)}…`,
+      color: "cyan",
+    }).start();
+
     const result = await client.pushSpec({
       content,
       name: options.name,
@@ -37,5 +44,6 @@ export const pushCommand = new Command("push")
       reason: options.reason,
     });
 
-    console.log(formatPushResult(result));
+    spinner.stop();
+    console.log(formatPushResult(result, { force: options.force, reason: options.reason }));
   });
