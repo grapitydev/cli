@@ -1,6 +1,6 @@
 {
   "name": "@grapity/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Grapity CLI - API spec registry management from the command line",
   "license": "Apache-2.0",
