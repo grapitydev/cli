@@ -4,7 +4,7 @@ import path from "node:path";
 import ora from "ora";
 import chalk from "chalk";
 import { client } from "../../client";
-import { formatValidateResult } from "../../output";
+import { formatValidateResult, formatError } from "../../output";
 
 export const validateCommand = new Command("validate")
   .description("Validate a spec against the latest version in the registry")
@@ -19,8 +19,15 @@ export const validateCommand = new Command("validate")
       color: "cyan",
     }).start();
 
-    const result = await client.validateSpec(options.against, { content });
+    try {
+      const result = await client.validateSpec(options.against, { content });
 
-    spinner.stop();
-    console.log(formatValidateResult(result));
+      spinner.stop();
+      console.log(formatValidateResult(result));
+    } catch (err) {
+      spinner.stop();
+      const message = err instanceof Error ? err.message : "An unexpected error occurred";
+      console.error(formatError("request failed", message));
+      process.exit(1);
+    }
   });

@@ -4,7 +4,7 @@ import path from "node:path";
 import ora from "ora";
 import chalk from "chalk";
 import { client } from "../../client";
-import { formatPushResult } from "../../output";
+import { formatPushResult, formatError } from "../../output";
 
 export const pushCommand = new Command("push")
   .description("Push a spec to the registry")
@@ -29,21 +29,28 @@ export const pushCommand = new Command("push")
       color: "cyan",
     }).start();
 
-    const result = await client.pushSpec({
-      content,
-      name: options.name,
-      type: options.type,
-      description: options.description,
-      owner: options.owner,
-      sourceRepo: options.sourceRepo,
-      tags: options.tags?.split(","),
-      gitRef: options.gitRef,
-      pushedBy: options.pushedBy,
-      prerelease: options.prerelease,
-      force: options.force,
-      reason: options.reason,
-    });
+    try {
+      const result = await client.pushSpec({
+        content,
+        name: options.name,
+        type: options.type,
+        description: options.description,
+        owner: options.owner,
+        sourceRepo: options.sourceRepo,
+        tags: options.tags?.split(","),
+        gitRef: options.gitRef,
+        pushedBy: options.pushedBy,
+        prerelease: options.prerelease,
+        force: options.force,
+        reason: options.reason,
+      });
 
-    spinner.stop();
-    console.log(formatPushResult(result, { force: options.force, reason: options.reason }));
+      spinner.stop();
+      console.log(formatPushResult(result, { force: options.force, reason: options.reason }));
+    } catch (err) {
+      spinner.stop();
+      const message = err instanceof Error ? err.message : "An unexpected error occurred";
+      console.error(formatError("request failed", message));
+      process.exit(1);
+    }
   });

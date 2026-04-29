@@ -6,16 +6,12 @@ export const getCommand = new Command("get")
   .description("Get details for a spec")
   .argument("<name>", "Name of the spec")
   .action(async (name) => {
-    const result = await client.getSpec(name);
-    if (!result) {
-      console.error(
-        formatError(
-          "not found",
-          `Spec "${name}" not found.`,
-          [`Run grapity registry list to see available specs.`]
-        )
-      );
+    try {
+      const result = await client.getSpec(name);
+      console.log(formatSpecDetail(result.spec, result.latestVersion));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "An unexpected error occurred";
+      console.error(formatError("request failed", message));
       process.exit(1);
     }
-    console.log(formatSpecDetail(result.spec, result.latestVersion));
   });
