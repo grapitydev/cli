@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/grapitydev/cli/compare/v0.1.0...v0.2.0) (2026-04-29)
+
+
+### Features
+
+* unify CLI output theming across all commands ([d394ed4](https://github.com/grapitydev/cli/commit/d394ed403db9b8c0478f10bcc25e5a4aa21824c1))
+* update CLI to consume new registry API response shapes ([5d71b2f](https://github.com/grapitydev/cli/commit/5d71b2f3ad5b332791f84df2c6deb5a697760e0c))
+
 ## [0.1.0](https://github.com/grapitydev/cli/compare/v0.0.12...v0.1.0) (2026-04-26)
 
 
