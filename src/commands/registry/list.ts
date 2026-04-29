@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { client } from "../../client";
-import { formatSpec } from "../../output";
+import { formatSpec, formatEmptyState } from "../../output";
 
 export const listCommand = new Command("list")
   .description("List all specs in the registry")
@@ -15,7 +15,9 @@ export const listCommand = new Command("list")
     });
 
     if (specs.length === 0) {
-      console.log("No specs found.");
+      console.log(formatEmptyState("No specs in the registry.", [
+        "Push one with:  grapity registry push ./openapi.yaml --name my-api",
+      ]));
       return;
     }
 

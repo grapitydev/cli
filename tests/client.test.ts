@@ -63,7 +63,7 @@ describe("client.health", () => {
 
 describe("client.listSpecs", () => {
   test("calls GET /v1/specs and returns empty array", async () => {
-    mockFetch(200, []);
+    mockFetch(200, { data: [] });
     const result = await client.listSpecs();
     expect(lastCall.url).toBe(`${BASE}/v1/specs`);
     expect(lastCall.method).toBe("GET");
@@ -71,19 +71,19 @@ describe("client.listSpecs", () => {
   });
 
   test("appends type query param when provided", async () => {
-    mockFetch(200, []);
+    mockFetch(200, { data: [] });
     await client.listSpecs({ type: "openapi" });
     expect(lastCall.url).toBe(`${BASE}/v1/specs?type=openapi`);
   });
 
   test("appends owner query param when provided", async () => {
-    mockFetch(200, []);
+    mockFetch(200, { data: [] });
     await client.listSpecs({ owner: "platform-team" });
     expect(lastCall.url).toBe(`${BASE}/v1/specs?owner=platform-team`);
   });
 
   test("appends comma-joined tags query param when provided", async () => {
-    mockFetch(200, []);
+    mockFetch(200, { data: [] });
     await client.listSpecs({ tags: ["billing", "payments"] });
     expect(lastCall.url).toBe(`${BASE}/v1/specs?tags=billing%2Cpayments`);
   });
@@ -91,7 +91,7 @@ describe("client.listSpecs", () => {
 
 describe("client.getSpec", () => {
   test("calls GET /v1/specs/:name", async () => {
-    mockFetch(200, { spec: { name: "payments-api" }, latestVersion: null });
+    mockFetch(200, { data: { spec: { name: "payments-api" }, latestVersion: null } });
     await client.getSpec("payments-api");
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api`);
     expect(lastCall.method).toBe("GET");
@@ -105,7 +105,7 @@ describe("client.getSpec", () => {
 
 describe("client.listVersions", () => {
   test("calls GET /v1/specs/:name/versions", async () => {
-    mockFetch(200, []);
+    mockFetch(200, { data: [], pagination: { hasMore: false, limit: 10, offset: 0, total: 0 } });
     await client.listVersions("payments-api");
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/versions`);
     expect(lastCall.method).toBe("GET");
@@ -114,7 +114,7 @@ describe("client.listVersions", () => {
 
 describe("client.getVersion", () => {
   test("calls GET /v1/specs/:name/versions/:semver", async () => {
-    mockFetch(200, { version: {} });
+    mockFetch(200, { data: {} });
     await client.getVersion("payments-api", "1.2.0");
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/versions/1.2.0`);
   });
@@ -122,7 +122,7 @@ describe("client.getVersion", () => {
 
 describe("client.pushSpec", () => {
   test("calls POST /v1/specs with spec content and name in body", async () => {
-    mockFetch(201, { spec: {}, version: {}, isNewSpec: true });
+    mockFetch(201, { data: { spec: {}, version: {}, isNewSpec: true } });
     await client.pushSpec({ content: "openapi: 3.1.0", name: "payments-api" });
     expect(lastCall.url).toBe(`${BASE}/v1/specs`);
     expect(lastCall.method).toBe("POST");
@@ -131,7 +131,7 @@ describe("client.pushSpec", () => {
   });
 
   test("includes force and reason in body when provided", async () => {
-    mockFetch(201, { spec: {}, version: {}, isNewSpec: false });
+    mockFetch(201, { data: { spec: {}, version: {}, isNewSpec: false } });
     await client.pushSpec({
       content: "openapi: 3.1.0",
       name: "payments-api",
@@ -156,7 +156,7 @@ describe("client.pushSpec", () => {
 
 describe("client.validateSpec", () => {
   test("calls POST /v1/specs/:name/validate with content in body", async () => {
-    mockFetch(200, { valid: true });
+    mockFetch(200, { data: { valid: true } });
     await client.validateSpec("payments-api", { content: "openapi: 3.1.0" });
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/validate`);
     expect(lastCall.method).toBe("POST");
@@ -164,7 +164,7 @@ describe("client.validateSpec", () => {
   });
 
   test("returns valid false with errors from server", async () => {
-    mockFetch(200, { valid: false, errors: ["Missing info.title"] });
+    mockFetch(200, { data: { valid: false, errors: ["Missing info.title"] } });
     const result = await client.validateSpec("payments-api", { content: "bad spec" });
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("Missing info.title");
@@ -173,7 +173,7 @@ describe("client.validateSpec", () => {
 
 describe("client.getCompatReport", () => {
   test("calls GET /v1/specs/:name/compat/:semver", async () => {
-    mockFetch(200, { compatReport: {} });
+    mockFetch(200, { data: {} });
     await client.getCompatReport("payments-api", "2.0.0");
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/compat/2.0.0`);
   });

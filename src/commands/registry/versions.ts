@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { client } from "../../client";
-import { formatVersion, formatVersionsFooter } from "../../output";
+import { formatVersion, formatVersionsFooter, formatEmptyState } from "../../output";
 
 export const versionsCommand = new Command("versions")
   .description("List all versions of a spec")
@@ -14,7 +14,9 @@ export const versionsCommand = new Command("versions")
     const result = await client.listVersions(name, { limit, offset });
 
     if (result.data.length === 0) {
-      console.log(`No versions found for "${name}".`);
+      console.log(formatEmptyState(`No versions found for "${name}".`, [
+        "Push the first version with:  grapity registry push ./spec.yaml --name " + name,
+      ]));
       return;
     }
 

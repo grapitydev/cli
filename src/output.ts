@@ -213,3 +213,27 @@ export function formatVersionsFooter(pagination: PaginationMeta): string | null 
   const to = pagination.offset + pagination.limit;
   return `  ${c.dim(`Showing ${from}–${to} of ${pagination.total}  ·  --offset ${to} to see more`)}`;
 }
+
+export function formatHeader(title: string, meta?: string): string {
+  const metaPart = meta ? `  ${c.label("·")}  ${c.dim(meta)}` : "";
+  return `  ${c.accentDim("◆")}  ${c.accent(title)}${metaPart}`;
+}
+
+export function formatEmptyState(message: string, hints?: string[]): string {
+  const lines = [`  ${c.dim("·")} ${c.dim(message)}`];
+  if (hints && hints.length > 0) {
+    lines.push("");
+    for (const hint of hints) {
+      lines.push(`  ${c.dim("›")} ${c.primary(hint)}`);
+    }
+  }
+  return lines.join("\n");
+}
+
+export function formatReady(port: number): string {
+  return `  ${c.success("●")}  Server ready  ${c.label("·")}  ${c.cyan(`http://localhost:${port}`)}`;
+}
+
+export function formatShutdown(): string {
+  return `  ${c.accentDim("◆")}  Shutting down Grapity Registry`;
+}

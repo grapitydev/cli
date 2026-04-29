@@ -1,7 +1,11 @@
 import { Command } from "commander";
 import os from "node:os";
 import path from "node:path";
-import { formatError, formatServeConfig } from "../output";
+import { createRequire } from "node:module";
+import { formatError, formatServeConfig, formatHeader } from "../output";
+
+const require = createRequire(import.meta.url);
+const { version } = require("../../package.json");
 
 export const serveCommand = new Command("serve")
   .description("Start the local Grapity registry server")
@@ -18,9 +22,9 @@ export const serveCommand = new Command("serve")
       ? undefined
       : (db ?? path.join(os.homedir(), ".grapity", "registry.db"));
 
-    console.log(
-      formatServeConfig({ mode: dbMode, port, dbPath, auth })
-    );
+    console.log(formatHeader("Grapity Registry", `v${version}`));
+    console.log("");
+    console.log(formatServeConfig({ mode: dbMode, port, dbPath, auth }));
     console.log("");
 
     try {
@@ -32,6 +36,15 @@ export const serveCommand = new Command("serve")
         sqlitePath: dbPath,
         postgresUrl: isPostgres ? db : undefined,
         auth: auth === "none" ? { mode: "none" } : { mode: auth },
+      });
+
+      const { formatReady, formatShutdown } = await import("../output");
+      console.log(formatReady(port));
+
+      process.on("SIGINT", () => {
+        console.log("");
+        console.log(formatShutdown());
+        process.exit(0);
       });
     } catch (error: any) {
       if (
