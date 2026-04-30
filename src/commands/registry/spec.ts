@@ -9,12 +9,13 @@ export const specCommand = new Command("spec")
   .option("--format <format>", "Output format: json or yaml (default: yaml)", "yaml")
   .action(async (name, options) => {
     try {
-      const versionLabel = options.semver ?? "latest";
+      const semver = options.semver?.trim().replace(/[,;.:]+$/, "");
+      const versionLabel = semver ?? "latest";
       console.log(formatHeader(name, `${options.format}  ·  ${versionLabel}`));
       console.log("");
 
       const content = await client.fetchSpec(name, {
-        semver: options.semver,
+        semver,
         format: options.format,
       });
 
