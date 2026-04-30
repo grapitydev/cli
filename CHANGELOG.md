@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/grapitydev/cli/compare/v0.3.0...v0.4.0) (2026-04-30)
+
+
+### Features
+
+* display resolved semver in registry spec header ([78c02e1](https://github.com/grapitydev/cli/commit/78c02e17b862d5b878ff08d339e24b21e23b8042))
+
 ## [0.3.0](https://github.com/grapitydev/cli/compare/v0.2.2...v0.3.0) (2026-04-30)
 
 
