@@ -43,7 +43,7 @@ async function request<T>(
   return response.json() as Promise<T>;
 }
 
-async function requestText(method: string, path: string): Promise<string> {
+async function requestText(method: string, path: string): Promise<{ text: string; headers: Headers }> {
   const baseUrl = getRegistryUrl();
   const url = `${baseUrl}${path}`;
   const config = getConfig();
@@ -61,7 +61,7 @@ async function requestText(method: string, path: string): Promise<string> {
     throw new Error(error.message ?? `Request failed: ${response.status}`);
   }
 
-  return response.text();
+  return { text: await response.text(), headers: response.headers };
 }
 
 export const client = {
@@ -110,11 +110,15 @@ export const client = {
 
   health: () => request<HealthResponse>("GET", "/v1/health"),
 
-  fetchSpec: (name: string, options: { semver?: string; format?: "json" | "yaml" }) => {
+  fetchSpec: async (name: string, options: { semver?: string; format?: "json" | "yaml" }) => {
     const format = options.format ?? "yaml";
     const path = options.semver
       ? `/v1/specs/${name}/versions/${options.semver}/spec.${format}`
       : `/v1/specs/${name}/spec.${format}`;
-    return requestText("GET", path);
+    const { text, headers } = await requestText("GET", path);
+    return {
+      content: text,
+      resolvedVersion: headers.get("Grapity-Resolved-Version") ?? undefined,
+    };
   },
 };

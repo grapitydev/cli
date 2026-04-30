@@ -10,14 +10,23 @@ export const specCommand = new Command("spec")
   .action(async (name, options) => {
     try {
       const semver = options.semver?.trim().replace(/[,;.:]+$/, "");
-      const versionLabel = semver ?? "latest";
-      console.log(formatHeader(name, `${options.format}  ·  ${versionLabel}`));
-      console.log("");
 
-      const content = await client.fetchSpec(name, {
+      const { content, resolvedVersion } = await client.fetchSpec(name, {
         semver,
         format: options.format,
       });
+
+      let versionLabel: string;
+      if (semver) {
+        versionLabel = semver;
+      } else if (resolvedVersion) {
+        versionLabel = `${resolvedVersion} (latest)`;
+      } else {
+        versionLabel = "latest";
+      }
+
+      console.log(formatHeader(name, `${options.format}  ·  ${versionLabel}`));
+      console.log("");
 
       const useColors = process.stdout.isTTY ?? false;
       const output = options.format === "json"
