@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0](https://github.com/grapitydev/cli/compare/v0.2.2...v0.3.0) (2026-04-30)
+
+
+### Features
+
+* add syntax highlighting to registry spec output ([c03f329](https://github.com/grapitydev/cli/commit/c03f329b23263604803011a5f2216b91bceed5bc))
+* pretty-print JSON output in registry spec command ([4a11fa5](https://github.com/grapitydev/cli/commit/4a11fa55c3cb96fa3b6ae15fe2532ec890c589dd))
+* rename --version to --semver in registry spec command ([559f042](https://github.com/grapitydev/cli/commit/559f0420944f303b262567f2020716949b78c14c))
+
+
+### Bug Fixes
+
+* sanitize semver input in registry spec command ([8f2e647](https://github.com/grapitydev/cli/commit/8f2e647990e0b6becd7b2ee9be88cbb2884f7e12))
+* wrap all registry commands in try/catch for themed error output ([e6701a1](https://github.com/grapitydev/cli/commit/e6701a1ed3ee1cdd0795a306c360667156b8d4c1))
+
 ## [0.2.2](https://github.com/grapitydev/cli/compare/v0.2.1...v0.2.2) (2026-04-29)
 
 
