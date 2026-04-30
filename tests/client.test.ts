@@ -218,13 +218,13 @@ describe("client.fetchSpec", () => {
 
   test("calls GET /v1/specs/:name/versions/:semver/spec.yaml for specific version, yaml", async () => {
     mockFetchText(200, "openapi: 3.1.0");
-    await client.fetchSpec("payments-api", { version: "1.2.0", format: "yaml" });
+    await client.fetchSpec("payments-api", { semver: "1.2.0", format: "yaml" });
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/versions/1.2.0/spec.yaml`);
   });
 
   test("calls GET /v1/specs/:name/versions/:semver/spec.json for specific version, json", async () => {
     mockFetchText(200, '{"openapi":"3.1.0"}');
-    await client.fetchSpec("payments-api", { version: "1.2.0", format: "json" });
+    await client.fetchSpec("payments-api", { semver: "1.2.0", format: "json" });
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api/versions/1.2.0/spec.json`);
   });
 

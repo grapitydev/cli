@@ -5,16 +5,16 @@ import { formatHeader, formatError, highlightJson, highlightYaml } from "../../o
 export const specCommand = new Command("spec")
   .description("Fetch the spec document for an API")
   .argument("<name>", "Name of the spec")
-  .option("--version <semver>", "Specific version (default: latest)")
+  .option("--semver <semver>", "Specific version (default: latest)")
   .option("--format <format>", "Output format: json or yaml (default: yaml)", "yaml")
   .action(async (name, options) => {
     try {
-      const versionLabel = options.version ?? "latest";
+      const versionLabel = options.semver ?? "latest";
       console.log(formatHeader(name, `${options.format}  ·  ${versionLabel}`));
       console.log("");
 
       const content = await client.fetchSpec(name, {
-        version: options.version,
+        semver: options.semver,
         format: options.format,
       });
 

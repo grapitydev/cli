@@ -110,10 +110,10 @@ export const client = {
 
   health: () => request<HealthResponse>("GET", "/v1/health"),
 
-  fetchSpec: (name: string, options: { version?: string; format?: "json" | "yaml" }) => {
+  fetchSpec: (name: string, options: { semver?: string; format?: "json" | "yaml" }) => {
     const format = options.format ?? "yaml";
-    const path = options.version
-      ? `/v1/specs/${name}/versions/${options.version}/spec.${format}`
+    const path = options.semver
+      ? `/v1/specs/${name}/versions/${options.semver}/spec.${format}`
       : `/v1/specs/${name}/spec.${format}`;
     return requestText("GET", path);
   },
